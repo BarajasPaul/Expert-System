@@ -1,0 +1,6 @@
+Car
+Money
+you have a car of the year
+Work
+You can't  maintance it.
+You must to find a job 

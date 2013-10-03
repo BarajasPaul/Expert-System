@@ -30,7 +30,7 @@ my $result=ReadData();
 print Dumper($result);
 foreach my $atoms (sort keys %$result)
 {
-	if ($atoms =~ /(C|E|F)/){
+if ($atoms =~ /(C|E|F)/){
 		my $check=&validateRules(\@Assertion_array,\@Negation_array);
 		if(!$check){
 			push @Negation_array,$atoms;

@@ -11,15 +11,15 @@ package InferenceMotor;
 
 use Conclusion;
 use Data::Dumper;
+use Compiler;
 use feature qw/switch/;
 our @EXPORT = qw(
-				validateRules
-);
+		validateRules
+		GetRule
+	    );
 our @ISA = qw(Exporter);
 
-my @contentRules=&GetContentRules();
 my $nextrule=0;
-
 
 sub GetRule(){
 	    return $contentRules[$nextrule];
@@ -29,11 +29,11 @@ sub validateRules(){
     my $ref_Assertation=shift;
     my $ref_Negation=shift;
     my $check;
-	my $answer;
+    my $answer;
+
 
     #print Dumper(\@$ref_Assertation);
     #print Dumper(\@$ref_Negation);
-
     my $CheckRule=&GetRule();
 
     print "Actual Rule is: $CheckRule";

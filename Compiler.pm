@@ -7,7 +7,7 @@
 
 use warnings;
 
-package InferenceMotor;
+package Compiler;
 
 use Conclusion;
 use InferenceMotor;
@@ -15,13 +15,15 @@ use Data::Dumper;
 use feature qw/switch/;
 our @EXPORT = qw(
 		%Data
+		@contentRules
 		ReadData
 		CompileRules
+		GetContentRules
 		ModifyRules
 );
 our @ISA = qw(Exporter);
 
-my @contentRules;
+our @contentRules;
 my %Data;
 my $id='A';
 my @SymbolAssambly;
@@ -107,11 +109,6 @@ sub CompileRules(){
 }
 print "\n\t***Inference Rules are correct***\n";
 }
-
-sub GetContentRules(){
-	    return @ContentRules;
-}
-
 
 sub ModifyRules(){
 	print "Would you like modify the rule?";

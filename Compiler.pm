@@ -35,14 +35,23 @@ my ($state)=1;
 my ($state1)=1;
 my $implication=undef;
 my $equivalence=undef;
+my $num=0;
 
 sub ReadData(){
 	open(FH, '< KnowlegdeBase.txt');
 	my (@content)=<FH>;
 	foreach my $line (@content){
+	    if($line =~ m/\/\//){
+		next;
+	    }elsif($line =~ /^\s/ ){
+		 next;
+	    }
 		$Data{$id}= $line;
+		print "$id -> $Data{$id}"; 
 		$id++;
+		$num++;
 	}
+	print "$num\n";
 	return \%Data;
 }
 

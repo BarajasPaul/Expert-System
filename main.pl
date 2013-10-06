@@ -28,9 +28,9 @@ print "Expert System \n\n\n";
 print "";   
 my $result=ReadData();
 print Dumper($result);
-foreach my $atoms (sort keys %$result)
-{
-if ($atoms =~ /(C|E|F)/){
+
+foreach my $atoms (sort keys %$result){
+=true	if ($atoms =~ /(C|E|F)/){
 		my $check=&validateRules(\@Assertion_array,\@Negation_array);
 		if(!$check){
 			push @Negation_array,$atoms;
@@ -42,6 +42,8 @@ if ($atoms =~ /(C|E|F)/){
 		    next;
 		}
 	}
+=cut
+    print "$atoms\n";
 	print "Do you have a $result->{$atoms}";
 	chomp ($entry_Value = <STDIN>);
 	if ($entry_Value =~ /yes/i){

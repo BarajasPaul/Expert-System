@@ -1,6 +1,68 @@
-Car
-Money
-you have a car of the year
-Work
-You can't  maintance it.
-You must to find a job 
+//Career describes an individuals' journey through learning, work and other aspects of life. There are a number of ways to define a career and the term is used in a variety of ways.
+
+//Requirements 
+Study
+Professional
+Problems with mathematicals
+interested in the physical
+
+//General 
+interested in Computer
+interested in Electronic
+Interested in Control systems
+interested in Mechanicals
+
+//Fields 
+interested in Circuits
+interested in Robots
+interested in Server
+interested in Machine
+interested in Networking
+interested in Biomedical
+interested in Circuit Desing
+interested in Instruments
+interested in Software
+interested in Hardware
+interested in Embedded System 
+Interested in Operate System 
+Interested in Distributed Systems
+Interested in Telecommunications
+interested in Signal processing   
+Interested in Architecture, Parallel Processing, and Dependability
+interested in Computer Vision
+interested in Integrated Circuits
+interested in Signal, Image, and Speech Processing
+interested in Coding, Cryptography, and Information Protection
+interested in Electricity
+interested in Electric power transmission
+interested in Understading Process
+interested in management science 
+interested in operations research 
+interested in systems engineering
+interested in manufacturing engineering 
+interested in ergonomics or human factors engineering, 
+interested in safety engineering 
+interested in Expert Systems
+interested in Microcontrollers 
+interested in PLCs
+interested in Medical Technology
+interested in mechanics
+interested in kinematics
+interested in thermodynamics
+interested in materials science
+interested in structural analysis
+
+//Intermediate Conclusions
+a Professional Career 
+Electronic engineering
+Computer engineering
+Optical engineering
+Power engineering
+Industrial engineering
+Mechatronics
+Mechanical engineering
+
+//Final Conclusions 
+Maybe, You are not a part of technological world, neither will be a professional.
+Yes, You can be a engineer.
+You're not Interesting in engineer career.

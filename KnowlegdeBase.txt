@@ -53,16 +53,16 @@ interested in materials science
 interested in structural analysis
 
 //Intermediate Conclusions
-a Professional Career 
-Electronic engineering
-Computer engineering
-Optical engineering
-Power engineering
-Industrial engineering
-Mechatronics
-Mechanical engineering
+-a Professional Career 
+-Electronic engineering
+-Computer engineering
+-Optical engineering
+-Power engineering
+-Industrial engineering
+-Mechatronics
+-Mechanical engineering
 
 //Final Conclusions 
-Maybe, You are not a part of technological world, neither will be a professional.
-Yes, You can be a engineer.
-You're not Interesting in engineer career.
+-Maybe, You are not a part of technological world, neither will be a professional.
+-Yes, You can be a engineer.
+-You're not Interesting in engineer career.

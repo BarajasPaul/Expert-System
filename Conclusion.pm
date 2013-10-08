@@ -9,6 +9,7 @@
 use warnings;
 use strict;
 use InferenceMotor;
+use Compiler;
 
 package Conclusion;
 

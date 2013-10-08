@@ -26,29 +26,23 @@ print "Expert System \n\n\n";
 &CompileRules;
 
 print "";   
-my $result=ReadData();
-print Dumper($result);
+my ($Antecedents,@SortKeys)=ReadData();
+#print Dumper($Antecedents);
+#print Dumper($SortKeys);
 
-foreach my $atoms (sort keys %$result){
-=true	if ($atoms =~ /(C|E|F)/){
-		my $check=&validateRules(\@Assertion_array,\@Negation_array);
-		if(!$check){
-			push @Negation_array,$atoms;
-		    next;
-		}else{
-		    print "$result->{$atoms}\n";
-			&Conclusion($atoms);
-		    push @Assertion_array,$atoms;
-		    next;
-		}
-	}
-=cut
+
+foreach my $atoms (@SortKeys){
     print "$atoms\n";
-	print "Do you have a $result->{$atoms}";
+	print "Do you have a $Antecedents->{$atoms}";
 	chomp ($entry_Value = <STDIN>);
 	if ($entry_Value =~ /yes/i){
 		push @Assertion_array,$atoms;
 	}else{
 		push @Negation_array,$atoms;
+	}
+	if (&validateRules(\@Assertion_array,\@Negation_array)){
+	    print "coool\n";
+	}else{
+	    push @Negation_array,$atoms;
 	}
 }

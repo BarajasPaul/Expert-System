@@ -29,16 +29,13 @@ sub validateRules(){
     my $ref_Assertation=shift;
     my $ref_Negation=shift;
     my $check;
-    my $answer;
-
+    my $validatepremise;
 
     #print Dumper(\@$ref_Assertation);
     #print Dumper(\@$ref_Negation);
     my $CheckRule=&GetRule();
 
     print "Actual Rule is: $CheckRule";
-    #$CheckRule =~ /(\(\s[A-Z])\s([\-\>|\&|\|])\s([A-Z])\s\)]/;
-    #print "$1  -> $2 -> $3\n";
 
     foreach (@{$ref_Assertation}){
 		my ($atom_check)=$_;
@@ -47,6 +44,7 @@ sub validateRules(){
 			$check=0;
 		}elsif($CheckRule =~ /(${atom_check})/){
 			&Conclusion($atom_check);
+			$premise=$1;
 			$check=1;
 		}
 		else{
@@ -57,6 +55,7 @@ sub validateRules(){
 		my ($atom_check)=$_;
 		if ( $CheckRule =~ /(\!.*${atom_check})/){
 			&Conclusion($atom_check);
+			$premise=$1;
 			$check=1;
 	    	next;
 		}elsif($CheckRule =~ /(${atom_check})/){
@@ -67,11 +66,14 @@ sub validateRules(){
 	    	$check=&VerifyConclusion($atom_check);
 		}
     }
-	if(!$check){
-	    &ModifyRules($CheckRule);
+    #IntermediateConclusion($CheckRule,$premise);
+    if(!$check){
 	}
-	$nextrule++;
     return $check;
 }
+sub IntermediateConclusion(){
+    my $ActualRule=shift;
+    my $value=shift;
+}
 
-1;
+1;  

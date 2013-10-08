@@ -14,17 +14,20 @@ use InferenceMotor;
 use Data::Dumper;
 use feature qw/switch/;
 our @EXPORT = qw(
-		%Data
+		%AntecedentValues
 		@contentRules
 		ReadData
 		CompileRules
-		GetContentRules
+		GetConclusionHash
+		GetArrayRules
 		ModifyRules
 );
 our @ISA = qw(Exporter);
 
 our @contentRules;
-my %Data;
+my @ArrayRules=[];
+my %AntecedentValues;
+my %ConclusionHash;
 my $id='A';
 my @SymbolAssambly;
 my $curlybrackets;
@@ -40,19 +43,31 @@ my $num=0;
 sub ReadData(){
 	open(FH, '< KnowlegdeBase.txt');
 	my (@content)=<FH>;
+	my @Sortk;
 	foreach my $line (@content){
 	    if($line =~ m/\/\//){
 		next;
 	    }elsif($line =~ /^\s/ ){
 		 next;
-	    }
-		$Data{$id}= $line;
-		print "$id -> $Data{$id}"; 
+	    }elsif($line =~ /^\-.*/ ){
+		$line=~ s/^\-//;
+		$ConclusionHash{$id}=$line;
+		#print "$id -> $ConclusionHash{$id}";
 		$id++;
+	    }else{
+		push @Sortk,$id;
+		$AntecedentValues{$id}= $line;
+		#print "$id -> $AntecedentValues{$id}"; 
+	        $id++;
 		$num++;
+	    }
 	}
 	print "$num\n";
-	return \%Data;
+	return (\%AntecedentValues,@Sortk);
+	close(FH);
+}
+sub GetConclusionHash{
+    return \%ConclusionHash;
 }
 
 sub CompileRules(){
@@ -60,20 +75,42 @@ sub CompileRules(){
     my $FileHandle= do{if( defined shift){'NewRulesBase.txt'}else{'RulesBase.txt'} };
     open my $FH,  '<',  $FileHandle or die "Can't read old file: $!";
     @contentRules=<$FH>;
+    my $row=0;
     foreach my $line (@contentRules){
 	my @test= $line =~ /./sg;
+	my $cindex=0;
+	print Dumper(@ArrayRules);
+	sleep 2;
 	foreach (@test){
 	    given($_){
-		print "$_";
+		when(/(\w)/){
+		    if($test[$cindex-1] =~ /\w/){
+			$cindex++;
+			next;
+		    }elsif($test[$cindex-1]=~ /\!/){
+			my ($tmpValue)=$test[$cindex-1].$_;
+			$cindex++;
+			push @{$ArrayRules[$row]}, $tmpValue;
+		    }elsif($test[$cindex+1]  =~ /([\(|\&|\||\(|\)|\-|\s])/){
+			push @{$ArrayRules[$row]}, $_;
+			 $cindex++;
+		    }elsif($test[$cindex+1]  =~ /(\w)/){
+			my ($tmpValue)=$_.$test[$cindex+1];
+			#print "TEST: $tmpValue\n";
+			$cindex++;
+			push @{$ArrayRules[$row]}, $tmpValue;
+		    }
+		}
+		$cindex++;
 		when(/\-/ or /\>/){
 		    if ($_ =~ /\-/){
-				if(defined $aux){
-			    	$aux=$aux.$_;
-			    	$state=0;
-				}else{
-			    	$aux=$_;
-			    	$state=0;
-				}
+			if(defined $aux){
+			    $aux=$aux.$_;
+			    $state=0;
+			}else{
+			    $aux=$_;
+			    $state=0;
+			}
 		    }elsif($state and /\>/){
 			print "\n\nThere is a mistake, with your Inference Rule, maybe you're missing the follwing operator '-'\n ";
 			print "Please verify and fix it!!\n";
@@ -110,6 +147,7 @@ sub CompileRules(){
 	}
 	close FH;
     }
+    $row++;
     if($curlybrackets ne 0){
 	print "it's missing a curly brace ')' ";
 	print "Please verify and fix it!!\n";
@@ -118,7 +156,9 @@ sub CompileRules(){
 }
 print "\n\t***Inference Rules are correct***\n";
 }
-
+sub GetArrayRules (){
+    return @ArrayRules;
+}
 sub ModifyRules(){
 	print "Would you like modify the rule?";
 	chomp ($answer = <STDIN>);

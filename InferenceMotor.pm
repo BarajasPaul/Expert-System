@@ -36,17 +36,15 @@ sub validateRules(){
 	print "Actual Rule is: $CheckRule";
 	foreach (@{$ref_Assertation}){
 	    my ($atom_check)=$_;
-	    print $atom_check."\n";
 	    given($atom_check){
 		when($CheckRule =~ /\>\s${_}\w/){
 		    print "";
 		}
-		when($CheckRule =~ /\>\s${atom_check}/){
-		    &Conclusion();   	    
+		when($CheckRule =~ /\>\s${_}/){
+		    next;
 		}
 	    }
-	    
-	    if($CheckRule  =~ /\!.*${atom_check}/){
+	    if($CheckRule  =~ /\!${atom_check}\b/){
 		next;
 	    }elsif($CheckRule =~ /\b(${atom_check})\b/){
 		push @{$AoA[$row]},$atom_check;
@@ -55,18 +53,22 @@ sub validateRules(){
 	}
 	foreach (@{$ref_Negation}){
 	    my ($atom_check)=$_;
-	    sleep 5;
-	    if($CheckRule =~ /\b(\>\s\!${atom_check})\b/){
-		&Conclusion();
-	    }elsif($CheckRule =~ /(\!.*${atom_check}\b)/){
-		push @{$AoA[$row]},$1;
-		&VerifyConclusion(@AoA,$row);
-	    }elsif($CheckRule =~ /(${atom_check}\b)/){
-		push @{$AoA[$row]},[];
+	    given($atom_check){
+		when($CheckRule =~ /\>\s\!${_}\w/){
+		    print "";
+		}
+		when($CheckRule =~ /\>\s\!${_}/){
+		    next;
+		}
+	    }
+	    if($CheckRule =~ /\!${atom_check}\b/){
+		push @{$AoA[$row]},"!".$atom_check;
+		&VerifyConclusion(\@AoA,$row);
+	    }elsif($CheckRule =~ /\b${atom_check}\b/){
+		next;
 	    }
 	}
 	$row++;
-	print $row."\n";
     }
     return $check;
 

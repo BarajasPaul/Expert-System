@@ -9,6 +9,7 @@
 use warnings;
 use strict;
 use base 'Exporter';
+use feature 'switch';
 
 use Data::Dumper;
 use InferenceMotor;
@@ -18,6 +19,7 @@ use Compiler;
 my $entry_Value;
 our @Assertion_array;
 our @Negation_array;
+my $choose_method;
 our %hash_Validate_info=(
     True => \@Assertion_array,
     False => \@Negation_array
@@ -25,25 +27,35 @@ our %hash_Validate_info=(
 print "Expert System \n\n\n";
 &CompileRules;
 
-print "";   
 my ($Antecedents,@SortKeys)=ReadData();
 #print Dumper($Antecedents);
 #print Dumper($SortKeys);
 
-
-foreach my $atoms (@SortKeys){
-    print "$atoms\n";
-	print "Do you have a $Antecedents->{$atoms}";
-	chomp ($entry_Value = <STDIN>);
-	if ($entry_Value =~ /yes/i){
+print "What method would you like to use to process the inference rules?\n";
+print "A-> Forward Chaining\n";
+print "B-> Backward Chaining\n";
+chomp ($choose_method = <STDIN>);
+given ($choose_method){
+    when($_ =~ /a/i){
+	foreach my $atoms (@SortKeys){
+	    print "$atoms\n";
+	    print "$Antecedents->{$atoms}";
+	    chomp ($entry_Value = <STDIN>);
+	    if ($entry_Value =~ /yes/i){
 		push @Assertion_array,$atoms;
-	}else{
+	    }else{
 		push @Negation_array,$atoms;
-	}
-	if (&validateRules(\@Assertion_array,\@Negation_array)){
-	    print "coool\n";
-	}else{
+	    }
+	    if (&validateRules(\@Assertion_array,\@Negation_array)){
+		print "coool\n";
+	    }else{
+	    }
 	    pop @Assertion_array;
-	    pop @Negation_array;
+	    pop @Assertion_array;
 	}
+    }when($_ =~ /'b'/i){
+	print "Nothing to do here";
+    }
+    default { print "Nothing to do here\n";};
+
 }

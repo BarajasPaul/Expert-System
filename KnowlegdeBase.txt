@@ -1,10 +1,10 @@
 //Career describes an individuals' journey through learning, work and other aspects of life. There are a number of ways to define a career and the term is used in a variety of ways.
 
 //Requirements 
-Study
-Professional
-Problems with mathematicals
-interested in the physical
+Do You like Study?
+Wanna be Professional?
+Do you have problems with mathematicals?
+you like physics, right?
 
 //General 
 interested in Computer

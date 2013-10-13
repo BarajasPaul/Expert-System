@@ -1,4 +1,4 @@
-#!/bin/perl a
+#!/bin/perl 
 ###########################################
 #
 #In particular, we would like to know, given some sentences,
@@ -8,12 +8,14 @@
 
 use warnings;
 use strict;
-use InferenceMotor;
-use Compiler;
 
 package Conclusion;
 
 use Data::Dumper;
+
+use InferenceMotor;
+use Compiler;
+
 use feature qw/switch/;
 our @EXPORT = qw(
 	Conclusion
@@ -26,18 +28,20 @@ my @Consecuents;
 sub Conclusion(){
 	my ($Value)=shift;
 	push @Consecuents,$Value;
+	print "HOLLLLLLLLLLLLLLLLLLLLLLA!!!\n"
 }
 
 sub VerifyConclusion(){
-	my ($Value)=shift;
-	foreach(@Consecuents)
-	{
-		if($_ eq $Value){
-			return 1;
-		}else{
-			return 0;
-		}
-	}
+    my @actualRule=shift;
+    my $NumRule=shift;
+    sleep 1;
+    my @ArrayRules=&GetArrayRules();
+    my $tmpConclusion= pop $ArrayRules[$NumRule];
+    print "$tmpConclusion\n";
+    print Dumper($actualRule[0][$NumRule])." ~~ ".Dumper($ArrayRules[$NumRule]);
+    if ($actualRule[0][$NumRule] ~~ @{$ArrayRules[$NumRule]}){
+	    &Conclusion();
+    }
+    push $ArrayRules[$NumRule],$tmpConclusion;
 }
-
 1;

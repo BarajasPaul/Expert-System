@@ -67,7 +67,7 @@ sub ReadData(){
 	close(FH);
 }
 sub GetConclusionHash{
-    return \%ConclusionHash;
+    return %ConclusionHash;
 }
 
 sub CompileRules(){
@@ -79,9 +79,10 @@ sub CompileRules(){
     foreach my $line (@contentRules){
 	my @test= $line =~ /./sg;
 	my $cindex=0;
-	print Dumper(@ArrayRules);
-	sleep 2;
+	#print Dumper(@ArrayRules);
+	#sleep 2;
 	foreach (@test){
+	    print "$_";
 	    given($_){
 		when(/(\w)/){
 		    if($test[$cindex-1] =~ /\w/){

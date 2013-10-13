@@ -20,7 +20,7 @@ our @EXPORT = qw(
 our @ISA = qw(Exporter);
 
 my $nextrule=0;
-
+my @AoA=[];
 sub GetRule(){
 	    return $contentRules[$nextrule];
 }
@@ -30,46 +30,46 @@ sub validateRules(){
     my $ref_Negation=shift;
     my $check;
     my $validatepremise;
-
-    #print Dumper(\@$ref_Assertation);
-    #print Dumper(\@$ref_Negation);
-    my $CheckRule=&GetRule();
-
-    print "Actual Rule is: $CheckRule";
-
-    foreach (@{$ref_Assertation}){
-		my ($atom_check)=$_;
-		if($CheckRule  =~ /(\!.*${atom_check})/){
-			print "This $atom_check atom it's not part of this rule!!!\n";
-			$check=0;
-		}elsif($CheckRule =~ /(${atom_check})/){
-			&Conclusion($atom_check);
-			$premise=$1;
-			$check=1;
+    my $row=0;
+    foreach(@contentRules){
+	my $CheckRule=$_;
+	print "Actual Rule is: $CheckRule";
+	foreach (@{$ref_Assertation}){
+	    my ($atom_check)=$_;
+	    print $atom_check."\n";
+	    given($atom_check){
+		when($CheckRule =~ /\>\s${_}\w/){
+		    print "";
 		}
-		else{
-	    	$check=&VerifyConclusion($atom_check);
+		when($CheckRule =~ /\>\s${atom_check}/){
+		    &Conclusion();   	    
 		}
-    }
-    foreach (@{$ref_Negation}){
-		my ($atom_check)=$_;
-		if ( $CheckRule =~ /(\!.*${atom_check})/){
-			&Conclusion($atom_check);
-			$premise=$1;
-			$check=1;
-	    	next;
-		}elsif($CheckRule =~ /(${atom_check})/){
-			print "This $atom_check atom it's not part of this rule!!!\n";
-			$check=0;
-		}
-		else{
-	    	$check=&VerifyConclusion($atom_check);
-		}
-    }
-    #IntermediateConclusion($CheckRule,$premise);
-    if(!$check){
+	    }
+	    
+	    if($CheckRule  =~ /\!.*${atom_check}/){
+		next;
+	    }elsif($CheckRule =~ /\b(${atom_check})\b/){
+		push @{$AoA[$row]},$atom_check;
+		&VerifyConclusion(\@AoA,$row);
+	    }
 	}
+	foreach (@{$ref_Negation}){
+	    my ($atom_check)=$_;
+	    sleep 5;
+	    if($CheckRule =~ /\b(\>\s\!${atom_check})\b/){
+		&Conclusion();
+	    }elsif($CheckRule =~ /(\!.*${atom_check}\b)/){
+		push @{$AoA[$row]},$1;
+		&VerifyConclusion(@AoA,$row);
+	    }elsif($CheckRule =~ /(${atom_check}\b)/){
+		push @{$AoA[$row]},[];
+	    }
+	}
+	$row++;
+	print $row."\n";
+    }
     return $check;
+
 }
 sub IntermediateConclusion(){
     my $ActualRule=shift;

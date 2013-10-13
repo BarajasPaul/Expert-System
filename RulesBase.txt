@@ -23,5 +23,5 @@
 (((F & J) & R) -> AV)
 ( ( ( ( (O & S) & W) & Z) & AM ) -> AV)
 (!A -> CA )
-((!AV & !AX)->AZ)
+((!AV & !AX)-> AZ)
 ((((!AV & !AX) & !AZ) & !BA ) -> BE )

@@ -43,6 +43,7 @@ foreach my $atoms (@SortKeys){
 	if (&validateRules(\@Assertion_array,\@Negation_array)){
 	    print "coool\n";
 	}else{
-	    push @Negation_array,$atoms;
+	    pop @Assertion_array;
+	    pop @Negation_array;
 	}
 }

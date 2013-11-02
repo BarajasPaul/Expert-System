@@ -1,4 +1,4 @@
-#!/bin/perl 
+#!/bin/perl
 ###########################################
 #
 #Information will be process here
@@ -14,20 +14,25 @@ use InferenceMotor;
 use Data::Dumper;
 use feature qw/switch/;
 our @EXPORT = qw(
+		@ArrayRules
 		%AntecedentValues
+		%IntConclusionHash
+		%FinalConclusions
 		@contentRules
 		ReadData
 		CompileRules
 		GetConclusionHash
 		GetArrayRules
 		ModifyRules
+		verifyIntermediateRules
 );
 our @ISA = qw(Exporter);
 
 our @contentRules;
-my @ArrayRules=[];
-my %AntecedentValues;
-my %ConclusionHash;
+our @ArrayRules=[];
+our %AntecedentValues;
+our %IntConclusionHash;
+our %FinalConclusions;
 my $id='A';
 my @SymbolAssambly;
 my $curlybrackets;
@@ -51,8 +56,12 @@ sub ReadData(){
 		 next;
 	    }elsif($line =~ /^\-.*/ ){
 		$line=~ s/^\-//;
-		$ConclusionHash{$id}=$line;
-		#print "$id -> $ConclusionHash{$id}";
+		$IntConclusionHash{$id}=$line;
+		#print "$id -> $IntConclusionHash{$id}";
+		$id++;
+	    }elsif($line =~ /^\*.*/ ){
+		$FinalConclusions{$id}=$line;
+		#print "$id -> $FinalConclusions{$id}"; 
 		$id++;
 	    }else{
 		push @Sortk,$id;
@@ -63,11 +72,11 @@ sub ReadData(){
 	    }
 	}
 	print "$num\n";
-	return (\%AntecedentValues,@Sortk);
+	return (\%AntecedentValues,\%IntConclusionHash,@Sortk);
 	close(FH);
 }
 sub GetConclusionHash{
-    return %ConclusionHash;
+    return %IntConclusionHash;
 }
 
 sub CompileRules(){
@@ -197,4 +206,15 @@ sub ModifyRules(){
 		return 0;
 	}
 }
+sub verifyIntermediateRules(){
+    my @AuxArray=shift;
+    return my @TestRules=map {
+		print $_;
+		sleep 1;
+		if (exists $IntConclusionHash{$_}){
+		    $_;
+		}
+    } @ArrayRules;
+}
+
 1;

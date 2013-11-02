@@ -2,7 +2,7 @@
 
 ############################
 ##
-##Interface
+###Interface
 ##
 ###########################
 
@@ -27,9 +27,10 @@ our %hash_Validate_info=(
 print "Expert System \n\n\n";
 &CompileRules;
 
-my ($Antecedents,@SortKeys)=ReadData();
+my ($Antecedents,$IntConclusions,@SortKeys)=ReadData();
 #print Dumper($Antecedents);
 #print Dumper($SortKeys);
+#print Dumper($IntConclusions);
 
 print "What method would you like to use to process the inference rules?\n";
 print "A-> Forward Chaining\n";
@@ -38,23 +39,34 @@ chomp ($choose_method = <STDIN>);
 given ($choose_method){
     when($_ =~ /a/i){
 	foreach my $atoms (@SortKeys){
-	    print "$atoms\n";
+	    if(!&CheckConcluded($atoms)){                 
+		next;
+	    }
+	    print "\n$atoms\n";
+	    my $cpatoms=$atoms;
+	    push @AntecendentsBased, $cpatoms;
 	    print "$Antecedents->{$atoms}";
 	    chomp ($entry_Value = <STDIN>);
-	    if ($entry_Value =~ /yes/i){
+	    if($entry_Value =~ /y/i){
 		push @Assertion_array,$atoms;
 	    }else{
 		push @Negation_array,$atoms;
 	    }
-	    if (&validateRules(\@Assertion_array,\@Negation_array)){
+	    if(&validateRules(\@Assertion_array,\@Negation_array)){
 		print "coool\n";
 	    }else{
 	    }
 	    pop @Assertion_array;
 	    pop @Assertion_array;
 	}
-    }when($_ =~ /'b'/i){
-	print "Nothing to do here";
+    }when($_ =~ /b/i){
+	my ($entry_Value);
+	print "Select a hypothesis that you want to conclude: \n";
+	foreach (keys %{$IntConclusions}){
+	    print "$_ -> $IntConclusions->{$_}\n";
+	} 
+	chomp ($entry_Value = <STDIN>);
+	&validateHypothesis($entry_Value);
     }
     default { print "Nothing to do here\n";};
 

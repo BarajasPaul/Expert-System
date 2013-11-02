@@ -1,4 +1,5 @@
-#!/bin/perl a
+#!/bin/perlsfdsfdbsuybfhdsbhjfbdshjdfsbdfssdsds fdsf  de tal manera que todo lo que se mueve de esta manera tiene un alcansade de llegar hacer mas profuno cque todo loq ue se relaiaziona
+#con el fodfds
 ###########################################
 #
 #Information will be process here
@@ -15,6 +16,7 @@ use Compiler;
 use feature qw/switch/;
 our @EXPORT = qw(
 		validateRules
+		validateHypothesis
 		GetRule
 	    );
 our @ISA = qw(Exporter);
@@ -31,9 +33,11 @@ sub validateRules(){
     my $check;
     my $validatepremise;
     my $row=0;
+    
+
     foreach(@contentRules){
 	my $CheckRule=$_;
-	print "Actual Rule is: $CheckRule";
+	#print "Actual Rule is: $CheckRule";
 	foreach (@{$ref_Assertation}){
 	    my ($atom_check)=$_;
 	    given($atom_check){
@@ -41,7 +45,8 @@ sub validateRules(){
 		    print "";
 		}
 		when($CheckRule =~ /\>\s${_}/){
-		    next;
+		    &AddConclusion($atom_check);
+		    print "";
 		}
 	    }
 	    if($CheckRule  =~ /\!${atom_check}\b/){
@@ -49,6 +54,7 @@ sub validateRules(){
 	    }elsif($CheckRule =~ /\b(${atom_check})\b/){
 		push @{$AoA[$row]},$atom_check;
 		&VerifyConclusion(\@AoA,$row);
+
 	    }
 	}
 	foreach (@{$ref_Negation}){
@@ -58,7 +64,7 @@ sub validateRules(){
 		    print "";
 		}
 		when($CheckRule =~ /\>\s\!${_}/){
-		    next;
+		    &AddConclusion($atom_check);
 		}
 	    }
 	    if($CheckRule =~ /\!${atom_check}\b/){
@@ -73,9 +79,38 @@ sub validateRules(){
     return $check;
 
 }
-sub IntermediateConclusion(){
-    my $ActualRule=shift;
+sub validateHypothesis(){
     my $value=shift;
+    my $index=0;
+    my @tmpTrueArray;
+    my @tmpFalseArray;
+    my @arrayHypo=();
+
+    foreach(@ArrayRules){
+	my $CheckRule=$_;
+	if ($CheckRule =~ /${value}/){
+	    print "$CheckRule \n";
+	    push @arrayHypo, $ArrayRules[$index];
+	}
+	$index++;
+    }
+    my @CorrectHypotesys=&verifyIntermediateRules(@arrayHypo);
+    print "Test: ".Dumper(@CorrectHypotesys);
+    foreach(@arrayHypo){
+	pop $_;
+	foreach(@{$_}){
+	    print $AntecedentValues{$_};
+	    chomp ($entry_Value = <STDIN>);
+	    if ($entry_Value =~ /yes/i){
+		push @tmpTrueArray,$_;
+	    }else{
+		push @tmpFalseArray,$_;
+	    }
+	    &validateRules(\@tmpTrueArray,\@tmpFalseArray);
+	    pop @tmpTrueArray;
+	    pop @tmpFalseArray;
+	}
+    }
 }
 
 1;  

@@ -111,18 +111,10 @@ sub VerifyConclusion(){
     push $ArrayRules[$NumRule],$tmpConclusion;
     unless($RuleTest){
 	$RuleTest=1;
-	foreach(@ArrayRules){
-	    my $lastelement=do {if(defined($_)){pop $_}else{$row++ ;next;}};
-	    $aux=$lastelement;
-	    push $_,$lastelement;
-	    if ($aux eq $tmpConclusion){
-		delete $ArrayRules[$row];	
-	    }
-	$row++;
-	}
+	&ValidatelastElementConclusion('RemoveRule',$tmpConclusion);
 	$aux=$tmpConclusion;
 	push @AntecendentsBased,$aux;	
-	#print Dumper(@ArrayRules);
+	#print Dumper(@ArrayRules)
 	&InferenceMotor::validateRules([$tmpConclusion]);
        $row=0;	
     }

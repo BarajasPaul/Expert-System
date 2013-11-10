@@ -208,7 +208,7 @@ sub ModifyRules(){
 }
 sub verifyIntermediateRules(){
     my @AuxArray=shift;
-    return my @TestRules=map {
+    return map {
 		print $_;
 		sleep 1;
 		if (exists $IntConclusionHash{$_}){
@@ -216,5 +216,27 @@ sub verifyIntermediateRules(){
 		}
     } @ArrayRules;
 }
-
+sub ValidatelastElementConclusion{
+    my $FlagCondition=shift;
+    my $ExpectedConsequent=shift;
+    my @ArrayAux;
+    foreach(@ArrayRules){
+	my $lastelement=do {if(defined($_)){pop $_}else{$row++ ;next;}};
+	$aux=$lastelement;
+	push $_,$lastelement;
+	if ($aux eq $tmpConclusion){
+	    given ($FlagCondition){
+		when(/AddRule/){
+		    push @ArrayAux,$ExpectedConsequent;
+		}
+		when(/RemoveRule/){
+		    delete $ArrayRules[$row];
+		}
+    
+	}
+	$row++;
+	}
+    }
+    return @ArrayAux unless ($FlagCondition eq 'AddRule');
+}
 1;

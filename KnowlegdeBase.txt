@@ -1,68 +1,44 @@
 //Career describes an individuals' journey through learning, work and other aspects of life. There are a number of ways to define a career and the term is used in a variety of ways.
 
 //Requirements 
-Do You like Study?
-Wanna be Professional?
-Do you have problems with mathematicals?
-you like physics, right?
-
-//General 
-interested in Computer
-interested in Electronic
-Interested in Control systems
-interested in Mechanicals
-
-//Fields 
-interested in Circuits
-interested in Robots
-interested in Server
-interested in Machine
-interested in Networking
-interested in Biomedical
-interested in Circuit Desing
-interested in Instruments
-interested in Software
-interested in Hardware
-interested in Embedded System 
-Interested in Operate System 
-Interested in Distributed Systems
-Interested in Telecommunications
-interested in Signal processing   
-Interested in Architecture, Parallel Processing, and Dependability
-interested in Computer Vision
-interested in Integrated Circuits
-interested in Signal, Image, and Speech Processing
-interested in Coding, Cryptography, and Information Protection
-interested in Electricity
-interested in Electric power transmission
-interested in Understading Process
-interested in management science 
-interested in operations research 
-interested in systems engineering
-interested in manufacturing engineering 
-interested in ergonomics or human factors engineering, 
-interested in safety engineering 
-interested in Expert Systems
-interested in Microcontrollers 
-interested in PLCs
-interested in Medical Technology
-interested in mechanics
-interested in kinematics
-interested in thermodynamics
-interested in materials science
-interested in structural analysis
+riguroso
+Buscas Argumentos
+Conocimiento Teorico
+universo
+desastres naturales
+laboratorio
+Fenomenos Naturales
+Gusto Matematico
+Buscar Soluciones
+Uso de Graficos
+Calculos Mentales
+analizar hechos
+concluir
+resolver Problema
+transformar energia
+analizar leyes fisicas
+Entender mecanismo
+Costruir robot
+Anatomia
+Enfermedades
+laboratorio
+Uso instrumental
+Descubrir Fallas
+Entender Mecanismos 
+Messenger
+Computador
+Exactitud
 
 //Intermediate Conclusions
--a Professional Career 
--Electronic engineering
--Computer engineering
--Optical engineering
--Power engineering
--Industrial engineering
--Mechatronics
--Mechanical engineering
+-Ciencias Formales
+-Ciencias Naturales
+-Matematicas
+-Logica
+-Fisica
+-Robotica
+-Biologia
+
 
 //Final Conclusions 
--Maybe, You are not a part of technological world, neither will be a professional.
--Yes, You can be a engineer.
--You're not Interesting in engineer career.
+*Ingenieria Computacion
+*Ciencias de la computacion

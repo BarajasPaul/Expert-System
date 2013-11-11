@@ -1,5 +1,6 @@
-#!/bin/perlsfdsfdbsuybfhdsbhjfbdshjdfsbdfssdsds fdsf  de tal manera que todo lo que se mueve de esta manera tiene un alcansade de llegar hacer mas profuno cque todo loq ue se relaiaziona
-#con el fodfds
+#!/bin/perl
+
+
 ###########################################
 #
 #Information will be process here
@@ -17,6 +18,7 @@ use feature qw/switch/;
 our @EXPORT = qw(
 		validateRules
 		validateHypothesis
+		ValidatelastElementConclusion
 		GetRule
 	    );
 our @ISA = qw(Exporter);
@@ -84,27 +86,27 @@ sub validateHypothesis(){
     my $index=0;
     my @tmpTrueArray;
     my @tmpFalseArray;
-    my @arrayHypo=();
-
-    foreach(@ArrayRules){
-	my $CheckRule=$_;
-	if ($CheckRule =~ /${value}/){
-	    print "$CheckRule \n";
-	    push @arrayHypo, $ArrayRules[$index];
-	}
-	$index++;
-    }
-    my @CorrectHypotesys=&verifyIntermediateRules(@arrayHypo);
-    print "Test: ".Dumper(@CorrectHypotesys);
-    foreach(@arrayHypo){
-	pop $_;
-	foreach(@{$_}){
-	    print $AntecedentValues{$_};
+    my @ArrayConsequents;
+    &ValidatelastElementConclusion('AddRule',$value);
+    print "Test: ".Dumper(@ArrayHypotesis);
+    #print "Test: ".Dumper(@CorrectHypotesys);
+    foreach(@ArrayHypotesis){
+	print "test: ".Dumper($_);
+	my $array=$$_;
+	my @data=@$array;
+	pop @data;
+	foreach(@data){
+	    my $aux=$_;
+	    my $aux2=$aux;
+	    next if ($aux ~~ @ArrayConsequents);
+	    next if (exists $IntConclusionHash{$aux});
+	    push @ArrayConsequents,$aux2;
+	    print $AntecedentValues{$aux};
 	    chomp ($entry_Value = <STDIN>);
-	    if ($entry_Value =~ /yes/i){
-		push @tmpTrueArray,$_;
+	    if ($entry_Value =~ /[yes|y]/i){
+		push @tmpTrueArray,$aux;
 	    }else{
-		push @tmpFalseArray,$_;
+		push @tmpFalseArray,$aux;
 	    }
 	    &validateRules(\@tmpTrueArray,\@tmpFalseArray);
 	    pop @tmpTrueArray;

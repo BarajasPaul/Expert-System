@@ -47,7 +47,7 @@ given ($choose_method){
 	    push @AntecendentsBased, $cpatoms;
 	    print "$Antecedents->{$atoms}";
 	    chomp ($entry_Value = <STDIN>);
-	    if($entry_Value =~ /y/i){
+	    if($entry_Value =~ /[yes|y|ye]/i){
 		push @Assertion_array,$atoms;
 	    }else{
 		push @Negation_array,$atoms;

@@ -87,8 +87,6 @@ sub VerifyConclusion(){
     my @actualRule=shift;
     my $NumRule=shift;
     my $flag=0;
-    my $aux=undef;
-    my ($row)=0;
     #sleep 1;
     my $tmpConclusion= do {if (defined $ArrayRules[$NumRule]){pop $ArrayRules[$NumRule]}else{next}};
     #print "$tmpConclusion\n";
@@ -107,16 +105,15 @@ sub VerifyConclusion(){
 	$RuleTest=&Conclusion($tmpConclusion,$ArrayRules[$NumRule]);
 	$flag=0;
     }
-
-    push $ArrayRules[$NumRule],$tmpConclusion;
+    my $auxConclusion=$tmpConclusion;
+    push $ArrayRules[$NumRule],$auxConclusion;
     unless($RuleTest){
 	$RuleTest=1;
+	print "here2\n";
 	&ValidatelastElementConclusion('RemoveRule',$tmpConclusion);
-	$aux=$tmpConclusion;
-	push @AntecendentsBased,$aux;	
+	push @AntecendentsBased,$tmpConclusion;	
 	#print Dumper(@ArrayRules)
 	&InferenceMotor::validateRules([$tmpConclusion]);
-       $row=0;	
     }
 }   
 

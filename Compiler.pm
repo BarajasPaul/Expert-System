@@ -15,6 +15,7 @@ use Data::Dumper;
 use feature qw/switch/;
 our @EXPORT = qw(
 		@ArrayRules
+		@ArrayHypotesis
 		%AntecedentValues
 		%IntConclusionHash
 		%FinalConclusions
@@ -25,11 +26,14 @@ our @EXPORT = qw(
 		GetArrayRules
 		ModifyRules
 		verifyIntermediateRules
+		ValidatelastElementConclusion
 );
 our @ISA = qw(Exporter);
 
 our @contentRules;
 our @ArrayRules=[];
+our @ArrayHypotesis;
+my @AuxArrayHypo;
 our %AntecedentValues;
 our %IntConclusionHash;
 our %FinalConclusions;
@@ -57,7 +61,7 @@ sub ReadData(){
 	    }elsif($line =~ /^\-.*/ ){
 		$line=~ s/^\-//;
 		$IntConclusionHash{$id}=$line;
-		#print "$id -> $IntConclusionHash{$id}";
+		print "$id -> $IntConclusionHash{$id}";
 		$id++;
 	    }elsif($line =~ /^\*.*/ ){
 		$FinalConclusions{$id}=$line;
@@ -94,7 +98,7 @@ sub CompileRules(){
 	    print "$_";
 	    given($_){
 		when(/(\w)/){
-		    if($test[$cindex-1] =~ /\w/){
+		   if($test[$cindex-1] =~ /\w/){
 			$cindex++;
 			next;
 		    }elsif($test[$cindex-1]=~ /\!/){
@@ -207,36 +211,45 @@ sub ModifyRules(){
 	}
 }
 sub verifyIntermediateRules(){
-    my @AuxArray=shift;
-    return map {
-		print $_;
-		sleep 1;
-		if (exists $IntConclusionHash{$_}){
-		    $_;
-		}
-    } @ArrayRules;
+    my (@AuxArray)=@{$_};
+    my ($AuxConsequent)=$_[1];
+    #print "TEST 1 : ".Dumper($AuxConsequent);
+    #print "TEST ARRAY : ".Dumper(@AuxArray);
+    #sleep 2;
+    foreach(@AuxArray){
+	my $Idtemp=$_;
+	#print "-$_-\n";
+	next if undef $_;
+	next if ($Idtemp eq $AuxConsequent);
+	next if ($Idtemp ~~ @AuxArrayHypo);
+	if (exists $IntConclusionHash{$Idtemp}){
+	    #print "TEST 2 : ".Dumper($IntConclusionHash{$Idtemp});
+	    &ValidatelastElementConclusion('AddRule',$Idtemp);
+	    push @AuxArrayHypo,$Idtemp;
+	}
+    }
 }
 sub ValidatelastElementConclusion{
     my $FlagCondition=shift;
     my $ExpectedConsequent=shift;
-    my @ArrayAux;
+    my $row=0;
     foreach(@ArrayRules){
 	my $lastelement=do {if(defined($_)){pop $_}else{$row++ ;next;}};
 	$aux=$lastelement;
 	push $_,$lastelement;
-	if ($aux eq $tmpConclusion){
+	if ($aux eq $ExpectedConsequent){
 	    given ($FlagCondition){
 		when(/AddRule/){
-		    push @ArrayAux,$ExpectedConsequent;
-		}
-		when(/RemoveRule/){
+		    &verifyIntermediateRules(\$ArrayRules[$row],$aux);
+		    push @ArrayHypotesis,\$ArrayRules[$row];
+
+		}when(/RemoveRule/){
 		    delete $ArrayRules[$row];
 		}
-    
+	    }
 	}
 	$row++;
-	}
     }
-    return @ArrayAux unless ($FlagCondition eq 'AddRule');
+    return @ArrayAux if ($FlagCondition eq 'AddRule');
 }
-1;
+1;  

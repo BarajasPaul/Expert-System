@@ -16,6 +16,7 @@ use InferenceMotor;
 use Conclusion;
 use Compiler;
 
+$ENV{INFERENCE}=0;
 my $entry_Value;
 our @Assertion_array;
 our @Negation_array;
@@ -60,6 +61,7 @@ given ($choose_method){
 	    pop @Assertion_array;
 	}
     }when($_ =~ /b/i){
+	$ENV{INFERENCE}=1;
 	my ($entry_Value);
 	print "Select a hypothesis that you want to conclude: \n";
 	foreach (keys %{$IntConclusions}){

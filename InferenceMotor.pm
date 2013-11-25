@@ -16,6 +16,7 @@ use Data::Dumper;
 use Compiler;
 use feature qw/switch/;
 our @EXPORT = qw(
+		ConlusionBC
 		validateRules
 		validateHypothesis
 		ValidatelastElementConclusion
@@ -23,6 +24,7 @@ our @EXPORT = qw(
 	    );
 our @ISA = qw(Exporter);
 
+our $ConlusionBC;
 my $nextrule=0;
 my @AoA=[];
 sub GetRule(){
@@ -83,6 +85,9 @@ sub validateRules(){
 }
 sub validateHypothesis(){
     my $value=shift;
+    $ConlusionBC=$value;
+    &AddFinalConclusion($ConlusionBC);
+
     my $index=0;
     my @tmpTrueArray;
     my @tmpFalseArray;
@@ -98,10 +103,12 @@ sub validateHypothesis(){
 	foreach(@data){
 	    my $aux=$_;
 	    my $aux2=$aux;
+	    my $aux3=$aux;
 	    next if ($aux ~~ @ArrayConsequents);
 	    next if (exists $IntConclusionHash{$aux});
 	    push @ArrayConsequents,$aux2;
 	    print $AntecedentValues{$aux};
+	    push @AntecendentsBased,$aux3;
 	    chomp ($entry_Value = <STDIN>);
 	    if ($entry_Value =~ /[yes|y]/i){
 		push @tmpTrueArray,$aux;

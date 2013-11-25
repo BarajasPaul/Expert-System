@@ -23,6 +23,7 @@ our @EXPORT = qw(
 		ReadData
 		CompileRules
 		GetConclusionHash
+		GetFinalConlusion
 		GetArrayRules
 		ModifyRules
 		verifyIntermediateRules
@@ -81,6 +82,9 @@ sub ReadData(){
 }
 sub GetConclusionHash{
     return %IntConclusionHash;
+}
+sub GetFinalConlusion{
+    return %FinalConclusions;
 }
 
 sub CompileRules(){

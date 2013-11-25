@@ -13,12 +13,13 @@ package Conclusion;
 
 use Data::Dumper;
 
-use InferenceMotor;
+use InferenceMotor qw/ConlusionBC/;
 use Compiler;
 
 use feature qw/switch/;
 our @EXPORT = qw(
 	AddConclusion
+	AddFinalConclusion
 	Conclusion
 	VerifyConclusion
 	CheckConcluded
@@ -30,8 +31,7 @@ my @Consecuents;
 my @Concluded;
 my $RuleTest=1;
 our @AntecendentsBased;
-sub AddConclusion()
-{
+sub AddConclusion(){
     print "Test add Conclusion\n";
     my (%DefinedConclusion)=&GetConclusionHash();
     if (exists $DefinedConclusion{$_}){
@@ -40,6 +40,21 @@ sub AddConclusion()
 	$DefinedConclusion{$_}=$AntecedentValues{$_};
     }
 }
+
+
+sub AddFinalConclusion(){
+    my $self=shift;
+    print "Test add Final Conclusion\n";
+    my (%DefinedConclusion)=&GetFinalConlusion();
+    print $self;
+    if (exists $DefinedConclusion{$self}){
+	last;
+    }else{
+	$FinalConclusions{$self}=$IntConclusionHash{$self};
+    }
+}
+
+
 
 sub Conclusion(){
     my ($entry_Value);

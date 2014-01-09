@@ -12,7 +12,8 @@ package Compiler;
 use Conclusion;
 use InferenceMotor;
 use Data::Dumper;
-use feature qw/switch/;
+use Semantic_Tree;
+use feature 'switch';
 our @EXPORT = qw(
 		@ArrayRules
 		@ArrayHypotesis
@@ -66,12 +67,12 @@ sub ReadData(){
 		$id++;
 	    }elsif($line =~ /^\*.*/ ){
 		$FinalConclusions{$id}=$line;
-		#print "$id -> $FinalConclusions{$id}"; 
+		#print "$id -> $FinalConclusions{$id}";
 		$id++;
 	    }else{
 		push @Sortk,$id;
 		$AntecedentValues{$id}= $line;
-		#print "$id -> $AntecedentValues{$id}"; 
+		#print "$id -> $AntecedentValues{$id}";
 	        $id++;
 		$num++;
 	    }
@@ -87,11 +88,13 @@ sub GetFinalConlusion{
     return %FinalConclusions;
 }
 
+
 sub CompileRules(){
     print "\t***Verify that Inference rules****\n\n";
     my $FileHandle= do{if( defined shift){'NewRulesBase.txt'}else{'RulesBase.txt'} };
     open my $FH,  '<',  $FileHandle or die "Can't read old file: $!";
     @contentRules=<$FH>;
+    &analyze_Semantic_tree(@contentRules);
     my $row=0;
     foreach my $line (@contentRules){
 	my @test= $line =~ /./sg;
@@ -256,4 +259,4 @@ sub ValidatelastElementConclusion{
     }
     return @ArrayAux if ($FlagCondition eq 'AddRule');
 }
-1;  
+1;

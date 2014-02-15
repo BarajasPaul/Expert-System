@@ -94,7 +94,8 @@ sub CompileRules(){
     my $FileHandle= do{if( defined shift){'NewRulesBase.txt'}else{'RulesBase.txt'} };
     open my $FH,  '<',  $FileHandle or die "Can't read old file: $!";
     @contentRules=<$FH>;
-    &analyze_Semantic_tree(@contentRules);
+    &Build_tree(2,@contentRules);
+    exit 1;
     my $row=0;
     foreach my $line (@contentRules){
 	my @test= $line =~ /./sg;
@@ -175,6 +176,7 @@ sub CompileRules(){
 	exit -1;
     }
 }
+print Dumper(@ArrayRules);
 print "\n\t***Inference Rules are correct***\n";
 }
 sub GetArrayRules (){

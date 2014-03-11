@@ -1,0 +1,68 @@
+//Career describes an individuals' journey through learning, work and other aspects of life. There are a number of ways to define a career and the term is used in a variety of ways.
+
+//Requirements
+a - Do You like Study?
+b - Wanna be Professional?
+c - Do you have problems with mathematicals?
+d - you like physics, right?
+
+//General
+e - interested in Computer
+f - interested in Electronic
+g - Interested in Control systems
+h - interested in Mechanicals
+
+//Fields
+i - interested in Circuits
+j - interested in Robots
+k - interested in Server
+l - interested in Machine
+m - interested in Networking
+n - interested in Biomedical
+o - interested in Circuit Desing
+p - interested in Instruments
+q - interested in Software
+r - interested in Hardware
+s - interested in Embedded System
+t - Interested in Operate System
+u - Interested in Distributed Systems
+v - Interested in Telecommunications
+w - interested in Signal processing
+x - Interested in Architecture, Parallel Processing, and Dependability
+y - interested in Computer Vision
+z - interested in Integrated Circuits
+aa - interested in Signal, Image, and Speech Processing
+ab - interested in Coding, Cryptography, and Information Protection
+ac - interested in Electricity
+ad - interested in Electric power transmission
+ae - interested in Understading Process
+af - interested in management science
+ag - interested in operations research
+ai - interested in systems engineering
+aj - interested in manufacturing engineering
+ak - interested in ergonomics or human factors engineering
+al - interested in safety engineering
+am - interested in Expert Systems
+an - interested in Microcontrollers
+ao - interested in PLCs
+ap - interested in Medical Technology
+aq - interested in mechanics
+ar - interested in kinematics
+as - interested in thermodynamics
+at - interested in materials science
+au - interested in structural analysis
+
+//Intermediate Conclusions
+.av - a Professional Career
+.aw - Electronic engineering
+.ax - Computer engineering
+.ay - Optical engineering
+.az - Power engineering
+.ba - Industrial engineering
+.bb - Mechatronics
+.bc - Mechanical engineering
+
+//Final Conclusions
+*bd - Maybe, You are not a part of technological world, neither will be a professional.
+*be - Yes, You can be a engineer.
+*bf - You're not Interesting in engineer career.

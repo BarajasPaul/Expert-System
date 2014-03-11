@@ -1,7 +1,30 @@
 #!/bin/perl
+
+=head Lincense
+/* -*- Mode: Perl */
+/*
+ * Compiler.pl
+ * Copyright (C) 2014 Barajas D. Paul <barajasmoon@gmail.com>
+ * 
+ * RegExpert-System is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * RegExpert-System is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
+ */
+
+=cut
 ###########################################
 #
-#Information will be process here
+#Rule-based systems can be used to perform lexical analysis to compile or interpret computer programs, or in natural language processing,
+#So this module will have the task to process all rules and  make readable in RegExpert-System
 #
 #############################################
 
@@ -12,8 +35,12 @@ package Compiler;
 use Conclusion;
 use InferenceMotor;
 use Data::Dumper;
-use Semantic_Tree;
+use Tree_Builder;
+use Common_definitions;
+
+use base 'Exporter';
 use feature 'switch';
+
 our @EXPORT = qw(
 		@ArrayRules
 		@ArrayHypotesis
@@ -39,10 +66,8 @@ my @AuxArrayHypo;
 our %AntecedentValues;
 our %IntConclusionHash;
 our %FinalConclusions;
-my $id='A';
 my @SymbolAssambly;
 my $curlybrackets;
-my @ValuesAssambly;
 my $aux=undef;
 my $nextrule=0;
 my ($state)=1;
@@ -52,34 +77,23 @@ my $equivalence=undef;
 my $num=0;
 
 sub ReadData(){
-	open(FH, '< KnowlegdeBase.txt');
+	open(FH, '< OrigKnowlegdeBase.txt');
 	my (@content)=<FH>;
-	my @Sortk;
 	foreach my $line (@content){
-	    if($line =~ m/\/\//){
-		next;
-	    }elsif($line =~ /^\s/ ){
-		 next;
-	    }elsif($line =~ /^\-.*/ ){
-		$line=~ s/^\-//;
-		$IntConclusionHash{$id}=$line;
-		print "$id -> $IntConclusionHash{$id}";
-		$id++;
-	    }elsif($line =~ /^\*.*/ ){
-		$FinalConclusions{$id}=$line;
-		#print "$id -> $FinalConclusions{$id}";
-		$id++;
+	    next if($line =~ m/(^\/\/|^\s)/);
+	    $line =~ /\-/;
+	    my ($id_element)=trim($`);
+	    local $data=delete_new_line($');
+	    if($id_element =~ /^\.(\w+)/){
+		$IntConclusionHash{$1}=$data;
+	    }elsif($id_element =~ /^\*(\w+)/ ){
+		$FinalConclusions{$1}=$data;
 	    }else{
-		push @Sortk,$id;
-		$AntecedentValues{$id}= $line;
-		#print "$id -> $AntecedentValues{$id}";
-	        $id++;
-		$num++;
+		$AntecedentValues{$id_element}= $data;
 	    }
 	}
-	print "$num\n";
-	return (\%AntecedentValues,\%IntConclusionHash,@Sortk);
 	close(FH);
+	return (\%AntecedentValues,\%IntConclusionHash);
 }
 sub GetConclusionHash{
     return %IntConclusionHash;
@@ -95,7 +109,6 @@ sub CompileRules(){
     open my $FH,  '<',  $FileHandle or die "Can't read old file: $!";
     @contentRules=<$FH>;
     &Build_tree(2,@contentRules);
-    exit 1;
     my $row=0;
     foreach my $line (@contentRules){
 	my @test= $line =~ /./sg;

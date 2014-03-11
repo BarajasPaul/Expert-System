@@ -1,5 +1,25 @@
 #!/bin/perl
 
+=head Lincense
+/* -*- Mode: Perl */
+/*
+ * main.pl
+ * Copyright (C) 2014 Barajas D. Paul <barajasmoon@gmail.com>
+ * 
+ * RegExpert-System is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * RegExpert-System is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
+ */
+=cut
 ############################
 ##
 ###Interface
@@ -16,7 +36,7 @@ use InferenceMotor;
 use Conclusion;
 use Compiler;
 
-$ENV{INFERENCE}=0;
+$ENV{SHOW_TABLES}=0;
 my $entry_Value;
 our @Assertion_array;
 our @Negation_array;
@@ -25,10 +45,12 @@ our %hash_Validate_info=(
     True => \@Assertion_array,
     False => \@Negation_array
 );
-print "Expert System \n\n\n";
+my ($get_true_table)= @ARGV;
+$ENV{SHOW_TABLES}=1 if ($get_true_table);
+print "------------------------------------>RegExpert-System<-------------------------------------\n\n\n";
 &CompileRules;
 
-my ($Antecedents,$IntConclusions,@SortKeys)=ReadData();
+my ($Antecedents,$IntConclusions)=ReadData();
 #print Dumper($Antecedents);
 #print Dumper($SortKeys);
 #print Dumper($IntConclusions);
@@ -39,8 +61,8 @@ print "B-> Backward Chaining\n";
 chomp ($choose_method = <STDIN>);
 given ($choose_method){
     when($_ =~ /a/i){
-	foreach my $atoms (@SortKeys){
-	    if(!&CheckConcluded($atoms)){                 
+	foreach my $atoms (sort(keys %{$Antecedents})){
+	    if(!&CheckConcluded($atoms)){
 		next;
 	    }
 	    print "\n$atoms\n";
@@ -66,7 +88,7 @@ given ($choose_method){
 	print "Select a hypothesis that you want to conclude: \n";
 	foreach (keys %{$IntConclusions}){
 	    print "$_ -> $IntConclusions->{$_}\n";
-	} 
+	}
 	chomp ($entry_Value = <STDIN>);
 	&validateHypothesis($entry_Value);
     }

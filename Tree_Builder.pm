@@ -28,7 +28,7 @@
 ##############################################
 
 use warnings;
-
+no warnings 'experimental::smartmatch';
 package Tree_Builder;
 
 use Compiler;
@@ -65,14 +65,12 @@ my %Semantic_Rule;
 my $init_root=0;
 my $Sastifactible=0;
 my $new=0;
-my $operator_regex= qr/([\&|\||\-\>|\=])/;
-
 
 sub Build_tree () {
     my ($status,@compile_rules)=@_;
     if ($status eq 1){
-	$init_root=0;
-	$id='A';
+        $init_root=0;
+        $id='A';
 	$idtree='A';
 	$new=1;
 	$position=1;
@@ -106,12 +104,13 @@ sub Build_tree () {
 	    given(@groups){
 		when(scalar(@groups) eq 0){
 		    my $last_rule="($rule)";
-		    if($last_rule =~ /^\((\s)?((\!)?(\w)(\w)?)(\s)?.(.)?(\s)?((\!)?(\w)(\w)?)(\s)?\)$/){
-			$rule =~ /(\s)?${operator_regex}(\s)?/g;
+
+                if($last_rule =~ /^\(\s?(\!?${atom_match})\s?..?\s?(\!?${atom_match})\s?\)$/){
+			$rule =~ /\s?${operator_regex}\s?/g;
 			my $first=trim($`);
 			my $second=trim($');
-			if($second =~ /\>(\s)?(\w(\w)?)/){
-				$second=$2;
+			if($second =~ /\>\s?(${atom_match})/){
+				$second=$1;
 			}
 			my ($branch_to_process , $actualid)=&Search_Node($last_rule);
 			&validate_operator_symbol($rule,$branch_to_process,1,1);
@@ -122,7 +121,7 @@ sub Build_tree () {
 			push @propsitional_variables, $second if($second !~ @propsitional_variables);
 		    }else{
 			$rule="($rule)";
-			my ($node_value)=$rule=~ /(\w(\w)?)/;
+			my ($node_value)=$rule=~ /(${atom_match})/;
 			my ($first_branch_to_process , $actual_id)=&Search_Node($rule);
 			&validate_operator_symbol($last_rule,$first_branch_to_process,$actualid,1);
 			my (@array);
@@ -151,7 +150,7 @@ sub Build_tree () {
 			    $init_root++;
 			    $idtree++;
 			    $position++;
-			    if ($second_aux_node =~ /^((\s)?(\!)?(\w(\w)?))/){
+			    if ($second_aux_node =~ /(\s?\!?${atom_match})/){
 				my $node_value=trim($1);
 				&validate_operator_symbol($rule,$idtree,$root,$groups[0],0);
 				$subtree_position[$position]=Tree::Simple->new([$node_value],$root);
@@ -159,9 +158,9 @@ sub Build_tree () {
 				push @propsitional_variables, $node_value  if($node_value !~ @propsitional_variables);
 				continue;
 			    }
-			    if($aux_node =~ /(\s)?([\!|\&|\||\-\>])((\s)?(\!)?(\w(\w)?))(\s)?/){
+			    if($aux_node =~ /\s?${operator_regex}\s?\!?(${atom_match})\s?/){
 				#print "right\n";
-				my ($node_value)=trim($3);
+				my ($node_value)=trim($2);
 				&validate_operator_symbol($rule,$idtree,$root,$groups[0],1);
 				$subtree_position[$position]=Tree::Simple->new([$node_value],$root);
 				$position++;
@@ -170,7 +169,7 @@ sub Build_tree () {
 			    }
 			}
 			my ($first_branch_to_process , $actual_id)=&Search_Node($rule);
-			if($` =~ /^((\s)?(\!)?(\w(\w)?))/ ){
+			if($` =~ /^(\s?\!?${atom_match})/ ){
 			    my $node_value=$1;
 			    $node_value=trim($node_value);
 			    &validate_operator_symbol($rule,$actual_id,$first_branch_to_process,$groups[0],0);
@@ -181,8 +180,8 @@ sub Build_tree () {
 			    $position++;
 			    push @propsitional_variables, $node_value  if($node_value !~ @propsitional_variables);
 			}
-			if($' =~ /^(\s)?${operator_regex}((\s)?(\!)?(\w(\w)?))(\s)?$/){
-			    my ($node_value)=$3;
+			if($' =~ /^\s?${operator_regex}\s?(\!?${atom_match})\s?$/){
+			    my ($node_value)=$2;
 			    $node_value=$4 if($node_value eq '');
 			    &validate_operator_symbol($rule,$actual_id,$first_branch_to_process,$groups[0],1);
 			    $node_value=trim($node_value);
@@ -195,7 +194,6 @@ sub Build_tree () {
 			}
 		    }
 		}when(scalar(@groups) eq 2){
-		    #print "$rule\n";
 		    &check_root();
 		    if($init_root eq 1){
 			&validate_operator_symbol($rule,@test_groups);
@@ -221,7 +219,7 @@ sub Build_tree () {
 	    }
 	    unshift @rule_in_process, map { s/^\(//; s/\)$//; $_ } @groups;
 	}
-	 if($new){
+	if($new){
 	   return $root;
 	}
 	&validate_tautologic(%Semantic_Rule) if($ENV{SHOW_TABLES});
@@ -302,7 +300,7 @@ sub Search_Node{
 			}
 			my ($check_position)=$position-1;
 			while($check_position){
-			    my ($node)=$subtree_position[$check_position]->getNodeValue();
+			    ($node)=$subtree_position[$check_position]->getNodeValue();
 			    while(ref($node) eq 'ARRAY' ){
 		   		$node=@{$node}[0];
 			    }
@@ -324,7 +322,7 @@ sub validate_tautologic(){
     my (@result_tautologic);
     foreach (@propsitional_variables){
 	my ($variable)=$_;
-	if($variable =~ /\!(\w(\w)?)/g){
+	if($variable =~ /\!(${atom_match})/g){
 	    $variable=$1;
 	}
 	if ($array_position eq 0){
@@ -376,7 +374,7 @@ sub verifiy_tautology(){
 	    }
 	    $data=trim($data);
 	    if($data=~/\!/){
-		$data=~/(\w(\w)?)/;
+		$data=~/(${atom_match})/;
 		$check_left=&evaluate_tree($pre->{$1},0,'!');
 	    }else{
 		$check_left=$pre->{$data};
@@ -395,7 +393,7 @@ sub verifiy_tautology(){
 	    }
 	    $data=trim($data);
 	    if($data=~/\!/){
-		$data=~/(\w(\w)?)/;
+		$data=~/(${atom_match})/;
 		$check_right=&evaluate_tree($pre->{$1},0,'!');
 	    }else{
 		$check_right=$pre->{$data};

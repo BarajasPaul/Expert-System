@@ -1,6 +1,6 @@
 #!/bin/perl
 
-=head Lincense
+=head1 Lincense
 /* -*- Mode: Perl */
 /*
  * Compiler.pl
@@ -20,123 +20,143 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
+=head1 NAME
+
+Compiler.pm - Kernel Inference
+
+=head1 VERSION
+
+VERSION 0.001
+
+=head1 DESCRIPTION
+
+Rule-based systems can be used to perform lexical analysis to compile or interpret computer programs, or in natural language processing,
+So this module will have the task to process all rules and  make readable in RegExpert-System
+
 =cut
-###########################################
-#
-#Rule-based systems can be used to perform lexical analysis to compile or interpret computer programs, or in natural language processing,
-#So this module will have the task to process all rules and  make readable in RegExpert-System
-#
-#############################################
 
 use warnings;
-
+no warnings 'experimental::smartmatch';
 package Compiler;
+use Exporter;
 
 use Conclusion;
 use InferenceMotor;
 use Data::Dumper;
 use Tree_Builder;
 use Common_definitions;
-
-use base 'Exporter';
 use feature 'switch';
 
 our @EXPORT = qw(
-		@ArrayRules
-		@ArrayHypotesis
-		%AntecedentValues
-		%IntConclusionHash
-		%FinalConclusions
-		@contentRules
-		ReadData
-		CompileRules
-		GetConclusionHash
-		GetFinalConlusion
-		GetArrayRules
-		ModifyRules
-		verifyIntermediateRules
-		ValidatelastElementConclusion
+            @ArrayHypotesis
+            @contentRules
+            %AntecedentValues
+            %IntConclusionHash
+            %FinalConclusions
+            ReadData
+            CompileRules
+            verifyIntermediateRules
+            ValidatelastElementConclusion
 );
 our @ISA = qw(Exporter);
 
 our @contentRules;
-our @ArrayRules=[];
+my $aux_regex="skip";
 our @ArrayHypotesis;
 my @AuxArrayHypo;
 our %AntecedentValues;
 our %IntConclusionHash;
 our %FinalConclusions;
-my @SymbolAssambly;
-my $curlybrackets;
 my $aux=undef;
 my $nextrule=0;
 my ($state)=1;
 my ($state1)=1;
 my $implication=undef;
 my $equivalence=undef;
-my $num=0;
+
+=head1 FUNCTION
+
+ReadData
+
+=head1 DESCRIPTION
+
+ReadData is parsing of the knowledge base to convert in a data structure which is suitable for processing in Reg-Expert System.
+
+=head1 BUGS
+
+Not found
+
+=cut
 
 sub ReadData(){
-	open(FH, '< OrigKnowlegdeBase.txt');
-	my (@content)=<FH>;
-	foreach my $line (@content){
-	    next if($line =~ m/(^\/\/|^\s)/);
-	    $line =~ /\-/;
-	    my ($id_element)=trim($`);
-	    local $data=delete_new_line($');
-	    if($id_element =~ /^\.(\w+)/){
-		$IntConclusionHash{$1}=$data;
-	    }elsif($id_element =~ /^\*(\w+)/ ){
-		$FinalConclusions{$1}=$data;
-	    }else{
-		$AntecedentValues{$id_element}= $data;
-	    }
-	}
-	close(FH);
-	return (\%AntecedentValues,\%IntConclusionHash);
-}
-sub GetConclusionHash{
-    return %IntConclusionHash;
-}
-sub GetFinalConlusion{
-    return %FinalConclusions;
+    open(FH, '< OrigKnowlegdeBase.txt');
+    my (@content)=<FH>;
+    foreach my $line (@content){
+        next if($line =~ m/(^\/\/|^\s)/);
+        $line =~ /\-/;
+        ($id_element)=trim($`);
+        local $data=delete_new_line($');
+        if($id_element =~ /^\.(\w+)/){
+            $IntConclusionHash{$1}=$data;
+        }elsif($id_element =~ /^\*(\w+)/ ){
+            $FinalConclusions{$1}=$data;
+        }else{
+            $AntecedentValues{$id_element}= $data;
+        }
+    }
+    close(FH);
+    return (\%AntecedentValues,\%IntConclusionHash);
 }
 
+=head1 FUNCTION
+
+CompileRules
+
+=head1 DESCRIPTION
+
+CompileRules is  used as a way to store and manipulate knowledge to interpret information in a useful way.where @ArrayRules saves all atoms in each tree by calling Tree_Builder and in a Dynamic likening Array that is using by the inference engine.
+
+=head1 BUGS
+
+Not found
+
+=cut
 
 sub CompileRules(){
     print "\t***Verify that Inference rules****\n\n";
+
+    my @SymbolAssambly;
+    my $curlybrackets;
     my $FileHandle= do{if( defined shift){'NewRulesBase.txt'}else{'RulesBase.txt'} };
     open my $FH,  '<',  $FileHandle or die "Can't read old file: $!";
     @contentRules=<$FH>;
     &Build_tree(2,@contentRules);
     my $row=0;
+
     foreach my $line (@contentRules){
-	my @test= $line =~ /./sg;
-	my $cindex=0;
-	#print Dumper(@ArrayRules);
-	#sleep 2;
+        if($line =~ &analyze_balanced_parenthesis()){
+            print "$& is a balanced parenthesis\n";
+        }else{
+            print "$line Does not match, check your rules,please.\n";
+            exit;
+        }
+        $line =~
+            /(?(DEFINE)
+                (?<atom> \!?[\w+\d+]+)
+                (?<not_atom> \W[^\w\d!]+)
+            )
+            (?<rule>
+                (?<antecendent>(?&atom))
+                    #(?{print " $aux_regex---->'$+{antecendent}'\n"})
+                    (?{ &check_data(trim($aux_regex),$row,$+{antecendent})})
+                (?<structure>(?&not_atom))
+                    (?{ $aux_regex=$+{structure} if defined($+{structure})})
+                (?<rule> (?R)?)
+            )/x;
+        $row++;
+        my @test= $line =~ /./sg;
 	foreach (@test){
-	    print "$_";
 	    given($_){
-		when(/(\w)/){
-		   if($test[$cindex-1] =~ /\w/){
-			$cindex++;
-			next;
-		    }elsif($test[$cindex-1]=~ /\!/){
-			my ($tmpValue)=$test[$cindex-1].$_;
-			$cindex++;
-			push @{$ArrayRules[$row]}, $tmpValue;
-		    }elsif($test[$cindex+1]  =~ /([\(|\&|\||\(|\)|\-|\s])/){
-			push @{$ArrayRules[$row]}, $_;
-			 $cindex++;
-		    }elsif($test[$cindex+1]  =~ /(\w)/){
-			my ($tmpValue)=$_.$test[$cindex+1];
-			#print "TEST: $tmpValue\n";
-			$cindex++;
-			push @{$ArrayRules[$row]}, $tmpValue;
-		    }
-		}
-		$cindex++;
 		when(/\-/ or /\>/){
 		    if ($_ =~ /\-/){
 			if(defined $aux){
@@ -159,8 +179,7 @@ sub CompileRules(){
 		}
 		when(/\</){
 		    $aux=$_;
-		}
-		when( /(\(|\)|\&|\||\!|\s)/){
+		}when( /(\(|\)|\&|\!|\s)/){
 		if (!$state){
 		    print "\n\nThere is a mistake with your Inference Rule, maybe you were checking for a \"equivalence\" or \"implication\" and you missing the following operator '>'\n ";
 		    print "Please verify and fix it!!\n";
@@ -182,19 +201,29 @@ sub CompileRules(){
 	}
 	close FH;
     }
-    $row++;
     if($curlybrackets ne 0){
 	print "it's missing a curly brace ')' ";
 	print "Please verify and fix it!!\n";
 	exit -1;
     }
 }
-print Dumper(@ArrayRules);
 print "\n\t***Inference Rules are correct***\n";
 }
-sub GetArrayRules (){
-    return @ArrayRules;
-}
+
+=head1 FUNCTION
+
+ModifyRules
+
+=head1 DESCRIPTION
+
+ModifyRules has purpose to ask to the user if it want to modify the expected rule from the Rule Base.
+
+=head1 BUGS
+
+It's not using cause is not the purpose of this project.
+
+=cut
+
 sub ModifyRules(){
 	print "Would you like modify the rule?";
 	chomp ($answer = <STDIN>);
@@ -232,6 +261,21 @@ sub ModifyRules(){
 		return 0;
 	}
 }
+
+=head1 FUNCTION
+
+verifyIntermediateRules
+
+=head1 DESCRIPTION
+
+verifyIntermediateRules is using by &validateHypothesis method to check intermediate rules that can be added to the actual hypothesis.
+
+=head1 BUGS
+
+Not Found
+
+=cut
+
 sub verifyIntermediateRules(){
     my (@AuxArray)=@{$_};
     my ($AuxConsequent)=$_[1];
@@ -246,32 +290,36 @@ sub verifyIntermediateRules(){
 	next if ($Idtemp ~~ @AuxArrayHypo);
 	if (exists $IntConclusionHash{$Idtemp}){
 	    #print "TEST 2 : ".Dumper($IntConclusionHash{$Idtemp});
-	    &ValidatelastElementConclusion('AddRule',$Idtemp);
+	    &ValidatelastElementConclusion(ADD_RULE,$Idtemp);
 	    push @AuxArrayHypo,$Idtemp;
 	}
     }
 }
-sub ValidatelastElementConclusion{
-    my $FlagCondition=shift;
-    my $ExpectedConsequent=shift;
-    my $row=0;
-    foreach(@ArrayRules){
-	my $lastelement=do {if(defined($_)){pop $_}else{$row++ ;next;}};
-	$aux=$lastelement;
-	push $_,$lastelement;
-	if ($aux eq $ExpectedConsequent){
-	    given ($FlagCondition){
-		when(/AddRule/){
-		    &verifyIntermediateRules(\$ArrayRules[$row],$aux);
-		    push @ArrayHypotesis,\$ArrayRules[$row];
 
-		}when(/RemoveRule/){
-		    delete $ArrayRules[$row];
-		}
-	    }
-	}
-	$row++;
-    }
-    return @ArrayAux if ($FlagCondition eq 'AddRule');
+=head1 FUNCTION
+
+ValidatelastElementConclusion
+
+=head1 DESCRIPTION
+
+ValidatelastElementConclusion just check last element that was concluded.
+
+=head1 BUGS
+
+Not Found
+
+=cut
+
+sub ValidatelastElementConclusion{
+    ($FlagCondition,$ExpectedConsequent,$numrule)=@_;
+        given ($FlagCondition){
+            when(/AddRule/){
+                    &verifyIntermediatenumrulees(\$ArrayRules[$row],$aux);
+                push @ArrayHypotesis,\$ArrayRules[$row];
+            }when(/RemoveRule/){
+                delete $ArrayRules[$$numrule];
+            }
+        }
+    return @ArrayAux if ($FlagCondition eq ADD_RULE);
 }
 1;

@@ -30,7 +30,7 @@
 use warnings;
 
 package Tree_Logical;
-
+no warnings 'experimental::smartmatch';
 use Compiler;
 use InferenceMotor;
 use Data::Dumper;

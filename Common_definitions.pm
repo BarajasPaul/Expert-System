@@ -26,8 +26,7 @@
 ### Common_definitions Modules
 ###---------------------------------------------------------------------------------
 ### -It has the purpose to define all common variables that can use in different    |
-### implementations and not repeat definitions,it will provide a good performance.  |
-###										    |
+### implementations and not repeat definitions,it will provide a good performance.								    |
 ### -Provide a error handling to identified what kind of errors found		    |
 ### at the moment of compiling and Data collection				    |
 ###----------------------------------------------------------------------------------
@@ -37,16 +36,18 @@
 use warnings;
 no warnings 'experimental::smartmatch';
 package Common_definitions;
+use Exporter;
 
 use Compiler;
 use Data::Dumper;
-require Exporter;
+
 our @EXPORT = qw(
     @ArrayRules
     @Array_of_Stacks
     $operator_regex
     $atom_match
     %implication_atom
+    %conclusion
     new_knowledge_base
     delete_new_line
     trim
@@ -57,18 +58,22 @@ our @EXPORT = qw(
     exact_match_atom
     new_stack
     get_atoms_rule
+    get_conclusions
     CONJUNTION_ATOM
     IMPLICATION_ATOM
     REMOVE_RULE
     ADD_RULE
 );
 our @ISA = qw(Exporter);
+
 our %hash_reference_conjunction;
+our %conclusion;
 our @ArrayRules=[];
 our @Array_of_Stacks=[];
 our $operator_regex= qr/([\&|\||\-\>|\=])/;
 our $atom_match=qr/[\w+\d+]+/;
 my $inc=0;
+
 our %mistakes_rules= (
         missing_operator => qr/\w+(?!\s?${operator_regex}\s?\w+)/,
         bad_implication => qr/\-(?=\>)|(?>=\-)\>/,
@@ -110,6 +115,10 @@ sub check_data{
     }else{
         push @{$ArrayRules[$tree_postion]},$actual_element;
     }
+    if($conection =~ /\-\>/){
+        my $hash_element=&Compiler::get_antecedents();
+        $conclusion{$actual_element}=$hash_element->{$actual_element};
+    }
 }
 sub analyze_balanced_parenthesis{
     qr/^(
@@ -132,7 +141,7 @@ sub get_groups_matching{
 }
 sub exact_match_atom{
     ($atom,$rule)=@_;
- #   print "------'$atom'----'$rule'";
+    #print "------'$atom'----'$rule'";
      if($rule =~ /(?<validate>(?:\!?\w+|\!|\d+|)?${atom}(?:\w+|\d+)?)/g){
         if($+{validate} eq $atom){
             return 1;
@@ -161,6 +170,10 @@ sub get_atoms_rule{
     }
     return @aux_array;
 }
+sub get_conclusions{
+    return \%conclusion;
+}
+
 sub CONJUNTION_ATOM{1;}
 sub IMPLICATION_ATOM{0;}
 sub REMOVE_RULE{"RemoveRule";}

@@ -136,6 +136,7 @@ sub validateRules(){
                     }
                     $count++;
                 }
+                $conjuntion_arg++;
                 push @{$AoA[$row]->[$conjuntion_arg]},$atom_check;
                 &VerifyConclusion(\@AoA,$row);
                 $status=CONJUNTION_ATOM;
@@ -170,11 +171,10 @@ Not found
 sub validateHypothesis(){
     my $value=shift;
     $ConlusionBC=$value;
-    &AddFinalConclusion($ConlusionBC);
+    &AddConclusion($ConlusionBC);
 
     my $index=0;
-    my @tmpTrueArray;
-    my @tmpFalseArray;
+    my $value_to_process;
     my @ArrayConsequents;
     &ValidatelastElementConclusion('AddRule',$value);
     print "Test: ".Dumper(@ArrayHypotesis);
@@ -195,13 +195,11 @@ sub validateHypothesis(){
             push @AntecendentsBased,$aux3;
             chomp ($entry_Value = <STDIN>);
             if ($entry_Value =~ /[yes|y]/i){
-                push @tmpTrueArray,$aux;
+                $value_to_process=$aux;
             }else{
-                push @tmpFalseArray,$aux;
+                $value_to_process="!".$aux;
             }
-            &validateRules(\@tmpTrueArray,\@tmpFalseArray);
-            pop @tmpTrueArray;
-            pop @tmpFalseArray;
+            &validateRules($value_to_process);
         }
     }
 }

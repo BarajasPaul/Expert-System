@@ -53,15 +53,16 @@ use InferenceMotor;
 use Conclusion;
 use Compiler;
 use Common_definitions;
+our @ISA = qw(Exporter);
 
 $ENV{SHOW_TABLES}=0;
 my $choose_method;
 my ($get_true_table)= @ARGV;
 $ENV{SHOW_TABLES}=1 if ($get_true_table);
 print "------------------------------------>RegExpert-System<-------------------------------------\n\n\n";
-&CompileRules;
 
-my ($Antecedents,$IntConclusions)=ReadData();
+my $Antecedents=&ReadData();
+&CompileRules;
 #print Dumper($Antecedents);
 #print Dumper($SortKeys);
 #print Dumper($IntConclusions);
@@ -87,8 +88,11 @@ given ($choose_method){
         $ENV{INFERENCE}=1;
         my ($entry_Value);
         print "Select a hypothesis that you want to conclude: \n";
-        foreach (keys %{$IntConclusions}){
-            print "$_ -> $IntConclusions->{$_}\n";
+        print Dumper(%conclusion);
+        exit;
+        my $conclusion=&Common_definitions::get_conclusions();
+        foreach (keys %$conclusion){
+            print "$_ -> $conclusion->{$_}\n";
         }
         chomp ($entry_Value = <STDIN>);
         &validateHypothesis($entry_Value);

@@ -82,10 +82,10 @@ Not found
 
 sub AddConclusion(){
     print "Test add Conclusion\n";
-    if (exists $IntConclusionHash{$_}){
+    if (exists $conclusion{$_}){
         return 1;
     }else{
-        $IntConclusionHash{$_}=$AntecedentValues{$_};
+        $conclusion{$_}=$conclusion{$_};
         return 1;
     }
 }
@@ -105,13 +105,6 @@ Not found
 =cut
 
 sub AddFinalConclusion(){
-    my $self=shift;
-    print "Test add Final Conclusion\n";
-    if (exists $FinalConclusions{$self}){
-        last;
-    }else{
-        $FinalConclusions{$self}=$IntConclusionHash{$self};
-    }
 }
 
 
@@ -134,28 +127,11 @@ sub Conclusion(){
     my $atom;
     my $i=0;
     my ($ConclusionValue,$rule)=@_;
-
+    my $conclusions=&Common_definitions::get_conclusions();
    # print Dumper(@AntecendentsBased);
     print "--------$ConclusionValue\n";
     my @atoms_rule=&get_atoms_rule($rule);
-    if(exists $FinalConclusions{$ConclusionValue}){
-        print "Conclusion obtanied by the following knowledge: \n ";
-        foreach (@AntecendentsBased){
-            sleep 1;
-        if (exists $IntConclusionHash{$_}){
-                print  " -> | ".$IntConclusionHash{$_}." -> ";
-                next;
-            }elsif($_ =~ /(?:\!)(?<element>${atom_match})/){
-                print  "| not ".$AntecedentValues{$+{element}}." -> ";
-                sleep 1;
-            }else{
-                print  "| ".$AntecedentValues{$_}." -> ";
-            }
-        }
-        print "\nConclusion: $FinalConclusions{$ConclusionValue}\n";
-        print "Actually, obtained a Final Conclusion\n";
-        exit -1;
-    }elsif(exists $IntConclusionHash{$ConclusionValue}){
+    if(exists $$conclusions{$ConclusionValue}){
         print "Conclusion obtanied by the following knowledge: \n ";
         foreach(@atoms_rule){
             if($_ =~ /(?:\!)(?<element>${atom_match})/){
@@ -165,7 +141,7 @@ sub Conclusion(){
             }
         }
         push @Concluded,$ConclusionValue;
-        print "\nConclusion: $IntConclusionHash{$ConclusionValue}\n";
+        print "\nConclusion: $$conclusions{$ConclusionValue}\n";
         print "There's more Information, Would You like to continue (y/n)\n";
         chomp (my $entry_Value = <STDIN>);
         if ($entry_Value =~ /y*/i){
@@ -237,7 +213,6 @@ sub VerifyConclusion(){
     push $ArrayRules[$NumRule],$auxConclusion;
     unless($RuleTest){
         $RuleTest=1;
-        print "here2\n";
         &ValidatelastElementConclusion(REMOVE_RULE,$tmpConclusion,\$NumRule);
     }
 }
@@ -319,11 +294,13 @@ sub validate_conjuction{
     my $numrule=shift;
     my $conjuction_element=shift;
     my $rule_inference=shift;
-    #print "$conjuction_element->[0] or $conjuction_element->[1] ~~ ".Dumper($rule_inference);
+    print "$conjuction_element->[0] or $conjuction_element->[1] ~~ ".Dumper($rule_inference);
+    print Dumper(@{$Array_of_Stacks[$numrule]});
     if(($conjuction_element->[0]  ~~ $rule_inference) or ($conjuction_element->[1] ~~ $rule_inference)){
         foreach my $stack_element(@{$Array_of_Stacks[$numrule]}){
-             return 2 if($stack_element->{first_stack_pointer} eq ($conjuction_element->[0] or $conjuction_element->[1]));
-             return 2 if($stack_element->{second_stack_pointer} eq ($conjuction_element->[0] or $conjuction_element->[1]));
+            next unless ($stack_element);
+            return 2 if($stack_element->{first_stack_pointer} eq ($conjuction_element->[0] or $conjuction_element->[1]));
+            return 2 if($stack_element->{second_stack_pointer} eq ($conjuction_element->[0] or $conjuction_element->[1]));
         }
         return 0;
     }

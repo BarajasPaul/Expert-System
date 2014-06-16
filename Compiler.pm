@@ -51,12 +51,12 @@ our @EXPORT = qw(
             @ArrayHypotesis
             @contentRules
             %AntecedentValues
-            %IntConclusionHash
-            %FinalConclusions
             ReadData
             CompileRules
             verifyIntermediateRules
             ValidatelastElementConclusion
+            get_antecedents
+            get_conclusion
 );
 our @ISA = qw(Exporter);
 
@@ -65,8 +65,6 @@ my $aux_regex="skip";
 our @ArrayHypotesis;
 my @AuxArrayHypo;
 our %AntecedentValues;
-our %IntConclusionHash;
-our %FinalConclusions;
 my $aux=undef;
 my $nextrule=0;
 my ($state)=1;
@@ -96,16 +94,10 @@ sub ReadData(){
         $line =~ /\-/;
         ($id_element)=trim($`);
         local $data=delete_new_line($');
-        if($id_element =~ /^\.(\w+)/){
-            $IntConclusionHash{$1}=$data;
-        }elsif($id_element =~ /^\*(\w+)/ ){
-            $FinalConclusions{$1}=$data;
-        }else{
-            $AntecedentValues{$id_element}= $data;
-        }
+        $AntecedentValues{$id_element}= $data;
     }
     close(FH);
-    return (\%AntecedentValues,\%IntConclusionHash);
+    return (\%AntecedentValues);
 }
 
 =head1 FUNCTION
@@ -138,12 +130,12 @@ sub CompileRules(){
             print "$& is a balanced parenthesis\n";
         }else{
             print "$line Does not match, check your rules,please.\n";
-            exit;
         }
         $line =~
             /(?(DEFINE)
                 (?<atom> \!?[\w+\d+]+)
                 (?<not_atom> \W[^\w\d!]+)
+                (?<conclusion> \-\>.?(?&atom))
             )
             (?<rule>
                 (?<antecendent>(?&atom))
@@ -288,8 +280,8 @@ sub verifyIntermediateRules(){
 	next if undef $_;
 	next if ($Idtemp eq $AuxConsequent);
 	next if ($Idtemp ~~ @AuxArrayHypo);
-	if (exists $IntConclusionHash{$Idtemp}){
-	    #print "TEST 2 : ".Dumper($IntConclusionHash{$Idtemp});
+	if (exists $conclusion{$Idtemp}){
+	    #print "TEST 2 : ".Dumper($conclusion{$Idtemp});
 	    &ValidatelastElementConclusion(ADD_RULE,$Idtemp);
 	    push @AuxArrayHypo,$Idtemp;
 	}
@@ -314,7 +306,7 @@ sub ValidatelastElementConclusion{
     ($FlagCondition,$ExpectedConsequent,$numrule)=@_;
         given ($FlagCondition){
             when(/AddRule/){
-                    &verifyIntermediatenumrulees(\$ArrayRules[$row],$aux);
+                    &verifyIntermediatenumrules(\$ArrayRules[$row],$aux);
                 push @ArrayHypotesis,\$ArrayRules[$row];
             }when(/RemoveRule/){
                 delete $ArrayRules[$$numrule];
@@ -322,4 +314,8 @@ sub ValidatelastElementConclusion{
         }
     return @ArrayAux if ($FlagCondition eq ADD_RULE);
 }
+sub get_antecedents{
+    return \%AntecedentValues;
+}
+
 1;

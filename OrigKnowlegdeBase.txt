@@ -52,17 +52,15 @@ as - interested in thermodynamics
 at - interested in materials science
 au - interested in structural analysis
 
-//Intermediate Conclusions
-.av - a Professional Career
-.aw - Electronic engineering
-.ax - Computer engineering
-.ay - Optical engineering
-.az - Power engineering
-.ba - Industrial engineering
-.bb - Mechatronics
-.bc - Mechanical engineering
-
-//Final Conclusions
-*bd - Maybe, You are not a part of technological world, neither will be a professional.
-*be - Yes, You can be a engineer.
-*bf - You're not Interesting in engineer career.
+//Conclusions
+av - Engineering Career
+aw - Electronic engineering
+ax - Computer engineering
+ay - Optical engineering
+az - Power engineering
+ba - Industrial engineering
+bb - Mechatronics
+bc - Mechanical engineering
+bd - Maybe, You are not a part of technological world, neither will be a professional.
+be - You can be a engineer.
+bf - You're not Interesting in engineer career.

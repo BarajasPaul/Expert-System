@@ -201,7 +201,7 @@ sub VerifyConclusion(){
         $elements_array_rule++;
        # print "Stack size --> ".Dumper(@Array_of_Stacks);
         #sleep 1;
-        print "----------------'".scalar(@{$ArrayRules[$NumRule]})."'-------------'$validation_conclusion'---------\n";
+        #print "----------------'".scalar(@{$ArrayRules[$NumRule]})."'-------------'$validation_conclusion'---------\n";
         #sleep 1;
         $flag=1 if (scalar(@{$ArrayRules[$NumRule]}) eq $validation_conclusion);
     }

@@ -170,9 +170,10 @@ Not found
 
 sub validateHypothesis(){
     my $value=shift;
+    my $ant=shift;
     $ConlusionBC=$value;
     &AddConclusion($ConlusionBC);
-
+    print Dumper($Conclusion);
     my $index=0;
     my $value_to_process;
     my @ArrayConsequents;
@@ -189,17 +190,10 @@ sub validateHypothesis(){
             my $aux2=$aux;
             my $aux3=$aux;
             next if ($aux ~~ @ArrayConsequents);
-            next if (exists $IntConclusionHash{$aux});
+            #next if (exists $IntConclusionHash{$aux});
             push @ArrayConsequents,$aux2;
-            print $AntecedentValues{$aux};
-            push @AntecendentsBased,$aux3;
-            chomp ($entry_Value = <STDIN>);
-            if ($entry_Value =~ /[yes|y]/i){
-                $value_to_process=$aux;
-            }else{
-                $value_to_process="!".$aux;
-            }
-            &validateRules($value_to_process);
+            #print $AntecedentValues{$aux};
+            &Interface_rule($aux,$ant);
         }
     }
 }

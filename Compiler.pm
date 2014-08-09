@@ -306,10 +306,19 @@ sub ValidatelastElementConclusion{
     ($FlagCondition,$ExpectedConsequent,$numrule)=@_;
         given ($FlagCondition){
             when(/AddRule/){
-                    &verifyIntermediatenumrules(\$ArrayRules[$row],$aux);
-                push @ArrayHypotesis,\$ArrayRules[$row];
+                $numrule=0;
+                foreach(@ArrayRules){
+                    my $lastelement=do {if(defined($_)){pop $_}else{$row++ ;next;}};
+                    my $aux=$lastelement;
+                    push $_,$lastelement;
+                    if ($aux eq $ExpectedConsequent){
+                        &verifyIntermediateRules($ArrayRules[$numrule],$aux);
+                        push @ArrayHypotesis,\$ArrayRules[$numrule];
+                    }
+                    $numrule++;
+                }
             }when(/RemoveRule/){
-                delete $ArrayRules[$$numrule];
+                delete $ArrayRules[$numrule];
             }
         }
     return @ArrayAux if ($FlagCondition eq ADD_RULE);

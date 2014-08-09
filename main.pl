@@ -88,14 +88,12 @@ given ($choose_method){
         $ENV{INFERENCE}=1;
         my ($entry_Value);
         print "Select a hypothesis that you want to conclude: \n";
-        print Dumper(%conclusion);
-        exit;
         my $conclusion=&Common_definitions::get_conclusions();
         foreach (keys %$conclusion){
             print "$_ -> $conclusion->{$_}\n";
         }
         chomp ($entry_Value = <STDIN>);
-        &validateHypothesis($entry_Value);
+        &validateHypothesis($entry_Value,$Antecedents);
     }
     default { print "Nothing to do here\n";};
 }
